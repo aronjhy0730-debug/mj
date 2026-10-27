@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>명조</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#14100F;--panel:#1B1512;--panel2:#1F1815;--line:#3A302A;--gold:#D9B26A;--red:#C8402F;--text:#F2EBDD;--mute:#A89F90;--edge:#6B5A3E}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans KR",sans-serif}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1440px;margin:0 auto}
+.tt{margin:0;font-family:"Noto Serif KR",serif;font-weight:800;color:var(--text)}
+.ey{color:var(--gold);font-size:13px;letter-spacing:.2em;font-weight:500}
+
+/* header */
+.hd{position:sticky;top:0;z-index:20;background:rgba(20,16,15,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.hd .in{height:76px;padding:0 80px;display:flex;align-items:center;justify-content:space-between}
+.hd nav{display:flex;gap:44px}
+.hd nav a{text-decoration:none;font-weight:500;letter-spacing:.08em;padding:8px 0;border-bottom:2px solid transparent}
+.hd nav a:hover,.hd nav a.on{color:var(--gold);border-bottom-color:var(--gold)}
+.av{width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);background:var(--bg);display:grid;place-items:center;cursor:pointer}
+
+/* media box (영상 자리) */
+.ph{position:relative;background:var(--panel2);border:1px solid var(--edge);overflow:hidden;display:grid;place-items:center}
+.ph>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph .sc{position:absolute;inset:0;background:rgba(20,16,15,.5)}
+.ph .ctr{position:relative;z-index:1;text-align:center}
+.ph iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:3;background:#000}
+.cap{position:absolute;left:20px;bottom:16px;z-index:2;font-weight:500;font-size:14px;color:var(--gold);letter-spacing:.06em;background:rgba(20,16,15,.78);padding:4px 10px}
+.pl{width:72px;height:72px;border-radius:50%;border:0;background:var(--red);display:grid;place-items:center;cursor:pointer;position:relative;z-index:2;transition:transform .15s}
+.pl:hover{transform:scale(1.08)}
+.yt{position:absolute;right:20px;bottom:16px;z-index:2;font-size:13px;color:var(--text);background:rgba(20,16,15,.78);padding:6px 12px;text-decoration:none}
+.yt:hover{color:var(--gold)}
+
+/* slider */
+.slider{position:relative}
+.slide{display:none}.slide.on{display:grid}
+.ar{position:absolute;top:50%;width:44px;height:44px;margin-top:-22px;border-radius:50%;border:1px solid var(--gold);background:var(--bg);display:grid;place-items:center;cursor:pointer;z-index:5;padding:0}
+.ar:hover{background:var(--gold)}.ar:hover svg path{stroke:var(--bg)}
+.ar.prev{left:0}.ar.next{right:0}
+#s-hero .ar.prev{left:16px}#s-hero .ar.next{right:16px}
+.dots{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.dots button{width:44px;height:44px;border:0;background:none;cursor:pointer;display:grid;place-items:center;padding:0}
+.dots button i{display:block;width:28px;height:4px;background:var(--line)}
+.dots button.on i{background:var(--gold)}
+
+.ph .yh{position:absolute;inset:0;z-index:3}
+.mb{width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);background:var(--bg);display:grid;place-items:center;cursor:pointer;padding:0}
+.mb:hover{background:var(--panel2)}
+#sound-btn[aria-pressed="true"]{background:var(--gold)}
+#sound-btn[aria-pressed="true"] svg *{stroke:var(--bg)}
+#sound-btn[aria-pressed="false"] .ic-on,#sound-btn[aria-pressed="true"] .ic-off{display:none}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;z-index:39}
+.ov.open{opacity:1;visibility:visible}
+.dr{position:fixed;top:0;right:0;height:100%;width:min(360px,86vw);background:var(--panel);border-left:1px solid var(--line);z-index:40;transform:translateX(100%);visibility:hidden;transition:transform .3s ease,visibility .3s;padding:20px 28px;display:flex;flex-direction:column;touch-action:pan-y}
+.dr.open{transform:none;visibility:visible;transition:transform .3s ease,visibility 0s}
+html.lock{overflow:hidden}
+.dr-top{display:flex;justify-content:space-between;align-items:center;height:48px;margin-bottom:24px}
+.dr nav{display:flex;flex-direction:column}
+.dr nav a{text-decoration:none;padding:18px 4px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px;min-height:44px}
+.dr nav a b{font:800 20px "Noto Serif KR",serif;letter-spacing:.08em}
+.dr nav a span{color:var(--mute);font-size:13px}
+.dr nav a:hover b,.dr nav a.on b{color:var(--gold)}
+.dr nav a.on{border-left:3px solid var(--gold);padding-left:12px}
+.dr-hint{margin-top:auto;color:var(--mute);font-size:12px;text-align:center}
+@media (prefers-reduced-motion:reduce){.dr,.ov{transition:none}}
+/* chips */
+.ch{height:44px;padding:0 20px;border-radius:22px;border:1px solid var(--gold);background:none;color:var(--gold);font:500 14px "Noto Sans KR";cursor:pointer}
+.ch.on{background:var(--gold);color:var(--bg)}
+
+/* sections */
+.sec{padding:96px 160px 0}
+.hero{height:560px}
+.hero h1{font-size:64px;margin:16px 0 36px}
+.rz{padding:0 64px}
+.rz .ph{height:460px}
+.story .slider{padding:0 64px}
+.story .ph{height:480px}
+.story-meta{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-top:20px}
+.story-meta h3{margin:0;font:800 22px "Noto Serif KR"}
+.story-meta p{margin:6px 0 0;color:var(--mute);font-size:15px}
+.thumbs{display:flex;gap:12px}
+.thumbs button{width:160px;height:90px;padding:0;border:1px solid var(--line);background:var(--panel2);cursor:pointer;position:relative;overflow:hidden}
+.thumbs button img{width:100%;height:100%;object-fit:cover;display:block;opacity:.55}
+.thumbs button.on{border-color:var(--gold)}.thumbs button.on img{opacity:1}
+.thumbs button span{position:absolute;left:6px;bottom:6px;font-size:12px;background:rgba(20,16,15,.85);padding:2px 6px;color:var(--text)}
+
+/* cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.cd{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--red);padding:24px}
+.cd .top{display:flex;justify-content:space-between;align-items:center}
+.cd h3{margin:0;font:800 20px "Noto Serif KR"}
+.cd ul{list-style:none;margin:16px 0 0;padding:0}
+.cd li{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-top:1px solid var(--line);font-size:15px}
+.cd time{color:var(--mute);font-size:13px;white-space:nowrap}
+.cd .more{color:var(--gold);font-size:14px;text-decoration:none}
+.cd img{width:100%;aspect-ratio:16/9;object-fit:cover;margin-top:16px;display:block}
+
+.ft{background:#0C0908;color:var(--mute);font-size:13px;margin-top:96px;padding:40px 160px;display:flex;justify-content:space-between;align-items:center;gap:24px}
+.ft b{font:800 22px "Noto Serif KR";color:var(--text)}
+
+@media (max-width:1100px){
+  .hd .in{padding:0 24px}.hd nav{gap:20px;font-size:13px}
+  .sec{padding:72px 24px 0}.ft{padding:32px 24px;margin-top:72px;flex-direction:column;align-items:flex-start}
+  .hero h1{font-size:40px}.hero{height:420px}
+  .rz,.story .slider{padding:0 0}.rz .ph,.story .ph{height:320px}
+  .ar.prev{left:8px}.ar.next{right:8px}
+  .grid3{grid-template-columns:1fr}
+  .story-meta{flex-direction:column;align-items:flex-start}.thumbs button{width:120px;height:68px}
+}
+@media (max-width:700px){.yt{top:16px;left:20px;right:auto;bottom:auto}.hero h1{font-size:30px}.hero .ctr{padding:0 60px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.pl{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hd"><div class="in">
+  <img src="img/a5acffc4817c1b46632df560a8ab0415.png" alt="명조" style="height:40px;width:auto;display:block">
+  <div style="display:flex;align-items:center;gap:12px"><button class="mb" id="sound-btn" aria-label="소리 켜기" aria-pressed="false" title="소리 켜기"><svg class="ic-off" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg><svg class="ic-on" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button><button class="mb" id="menu-btn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button class="av" aria-label="내 계정"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1-5 4-7 8-7s7 2 8 7"></path></svg></button></div>
+  
+</div></header>
+<div class="ov" id="ov"></div>
+<aside class="dr" id="drawer" aria-label="메뉴">
+  <div class="dr-top"><span class="ey">MENU</span><button class="mb" id="menu-close" aria-label="메뉴 닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+  <nav id="nav" aria-label="주요 메뉴">
+    <a href="#update"><b>UPDATE</b><span>업데이트 영상</span></a>
+    <a href="#resonator"><b>RESONATOR</b><span>신규 공명자</span></a>
+    <a href="#story"><b>STORY</b><span>스토리 · 신규 지역</span></a>
+    <a href="#content"><b>CONTENT</b><span>변경 사항 · 버그 수정</span></a>
+    <a href="#event"><b>EVENT</b><span>이벤트 일정</span></a>
+    <a href="#guide"><b>GUIDE</b><span>안내</span></a>
+  </nav>
+  <p class="dr-hint">오른쪽으로 쓸어서 닫기</p>
+</aside>
+
+
+<!-- UPDATE : 업데이트 영상 3개 슬라이더 -->
+<section id="update">
+  <div class="slider" id="s-hero" data-yt="1" data-auto="1">
+    <div class="slide ph hero on" data-vid="9CfFPNSI9vA" data-cap="3.7 버전 필드 미리보기">
+      <img class="bg" src="https://i.ytimg.com/vi/9CfFPNSI9vA/maxresdefault.jpg" onerror="this.onerror=null;this.src='img/c2222e73db1442769f707ce6bb11943c.jpg'" alt="영상 썸네일"><div class="sc"></div>
+      <div class="ctr"><div class="ey">UPDATE VIDEO</div><h1 class="tt">3.7 버전 업데이트</h1></div>
+      <span class="cap">3.7 버전 필드 미리보기 · 1/3</span><a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=9CfFPNSI9vA">YouTube에서 보기</a>
+    </div>
+    <div class="slide ph hero" data-vid="jf3U_6DQ6MA" data-cap="공명자 전투 모션">
+      <img class="bg" src="https://i.ytimg.com/vi/jf3U_6DQ6MA/maxresdefault.jpg" onerror="this.onerror=null;this.src='img/c2222e73db1442769f707ce6bb11943c.jpg'" alt="영상 썸네일"><div class="sc"></div>
+      <div class="ctr"><div class="ey">UPDATE VIDEO</div><h1 class="tt">3.7 버전 업데이트</h1></div>
+      <span class="cap">공명자 전투 모션 · 2/3</span><a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=jf3U_6DQ6MA">YouTube에서 보기</a>
+    </div>
+    <div class="slide ph hero" data-vid="h9M1cEVHPlw" data-cap="업데이트 영상 3 (제목 확인 필요)">
+      <img class="bg" src="https://i.ytimg.com/vi/h9M1cEVHPlw/maxresdefault.jpg" onerror="this.onerror=null;this.src='img/c2222e73db1442769f707ce6bb11943c.jpg'" alt="영상 썸네일"><div class="sc"></div>
+      <div class="ctr"><div class="ey">UPDATE VIDEO</div><h1 class="tt">3.7 버전 업데이트</h1></div>
+      <span class="cap">업데이트 영상 3 · 3/3 (제목 확인 필요)</span><a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=h9M1cEVHPlw">YouTube에서 보기</a>
+    </div>
+    <button class="ar prev" aria-label="이전 영상"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2.5" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="ar next" aria-label="다음 영상"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2.5" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  <div class="dots" data-for="s-hero"></div>
+</section>
+
+<!-- RESONATOR -->
+<section id="resonator" class="sec">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div><div class="ey">NEW RESONATOR</div><h2 class="tt" style="font-size:36px;margin-top:10px">신규 공명자 (2명)</h2></div>
+    <div style="display:flex;gap:12px" id="rz-chips">
+      <button class="ch on" data-i="0">여우의 별자리</button><button class="ch" data-i="1">쇄명</button>
+    </div>
+  </div>
+  <div class="slider rz" id="s-rz" data-yt="1" style="margin-top:32px">
+    <div class="slide ph on" data-vid="jf3U_6DQ6MA" data-cap="여우의 별자리 전투 모션">
+      <img class="bg" src="img/9fdc315e7a4f17e9bec799eb9d3de2d5.jpg" alt="여우의 별자리 키비주얼">
+      
+      <span class="cap">여우의 별자리 · 전투 모션</span><a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=jf3U_6DQ6MA">YouTube에서 보기</a>
+    </div>
+    <div class="slide ph">
+      <img class="bg" src="img/9300d99c49d743d547a8b0756592b635.jpg" alt="쇄명 키비주얼">
+      <a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=%EB%AA%85%EC%A1%B0+%EC%87%84%EB%AA%85+PV">YouTube에서 검색</a>
+      <span class="cap">쇄명 · PV (영상 확인 필요)</span>
+    </div>
+    <button class="ar prev" aria-label="이전"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2.5" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="ar next" aria-label="다음"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2.5" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+</section>
+
+<!-- STORY / NEW AREA : 스토리 PV → 신규 지역 영상으로 넘어가는 슬라이더 -->
+<section id="story" class="sec story">
+  <div class="ey">STORY · AREA</div>
+  <h2 class="tt" style="font-size:36px;margin:10px 0 32px">신규 스토리 · 신규 지역</h2>
+  <div class="slider" id="s-story" data-yt="1">
+    <div class="slide ph on" data-vid="xLWZ-bApa2c" data-cap="신규 스토리 PV">
+      <img class="bg" src="img/da5910e00447b336aab83dd673a72dc4.jpg" alt="신규 스토리 PV 이미지"><div class="sc"></div>
+      
+      <span class="cap">신규 스토리 PV</span><a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=xLWZ-bApa2c">YouTube에서 보기</a>
+    </div>
+    <div class="slide ph" data-vid="9CfFPNSI9vA" data-cap="신규 지역 · 몽추천라">
+      <img class="bg" src="img/6aa02d3e9cfdd3868d769bb0e792a702.jpg" alt="신규 지역 스크린샷"><div class="sc"></div>
+      
+      <span class="cap">신규 지역 · 몽추천라</span><a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=9CfFPNSI9vA">YouTube에서 보기</a>
+    </div>
+    <button class="ar prev" aria-label="이전"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2.5" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="ar next" aria-label="다음"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2.5" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  <div class="story-meta">
+    <div><h3 id="story-title">신규 스토리 PV</h3><p id="story-desc">3.7 버전 공식 트레일러입니다. (영문 공식 채널)</p></div>
+    <div class="thumbs" id="story-thumbs">
+      <button class="on" data-i="0" aria-label="신규 스토리 PV 보기"><img src="img/da5910e00447b336aab83dd673a72dc4.jpg" alt=""><span>스토리</span></button>
+      <button data-i="1" aria-label="신규 지역 영상 보기"><img src="img/6aa02d3e9cfdd3868d769bb0e792a702.jpg" alt=""><span>신규 지역</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<section id="content" class="sec">
+  <div class="grid3">
+    <div class="cd"><div class="top"><h3>변경 사항</h3><a class="more" href="#">더보기 +</a></div><ul><li><span>[변경 항목 제목]</span><time>[MM.DD]</time></li><li><span>[변경 항목 제목]</span><time>[MM.DD]</time></li><li><span>[변경 항목 제목]</span><time>[MM.DD]</time></li><li><span>[변경 항목 제목]</span><time>[MM.DD]</time></li></ul></div>
+    <div class="cd"><div class="top"><h3>버그 수정</h3><a class="more" href="#">더보기 +</a></div><ul><li><span>[수정 항목 제목]</span><time>[MM.DD]</time></li><li><span>[수정 항목 제목]</span><time>[MM.DD]</time></li><li><span>[수정 항목 제목]</span><time>[MM.DD]</time></li><li><span>[수정 항목 제목]</span><time>[MM.DD]</time></li></ul></div>
+    <div class="cd" id="event"><div class="top"><h3>이벤트 일정</h3><a class="more" href="#">더보기 +</a></div><img src="img/50c776d7d28289276f324bc55d6d414a.jpg" alt="이벤트 배너"><ul><li><span>[이벤트 이름]</span><time>[MM.DD]</time></li><li><span>[이벤트 이름]</span><time>[MM.DD]</time></li><li><span>[이벤트 이름]</span><time>[MM.DD]</time></li><li><span>[이벤트 이름]</span><time>[MM.DD]</time></li></ul></div>
+  </div>
+</section>
+
+<footer id="guide" class="ft"><b>명조</b><span>※ 콘텐츠 내용은 참고용이며, 실제 내용은 정식 출시 버전을 기준으로 합니다.</span></footer>
+</div>
+
+<script>
+(function(){
+  /* ---------- YouTube IFrame API ---------- */
+  var ready = false, queue = [];
+  window.onYouTubeIframeAPIReady = function(){ ready = true; queue.splice(0).forEach(function(f){ f(); }); };
+  var tg = document.createElement('script'); tg.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(tg);
+  function whenYT(f){ if (ready || (window.YT && YT.Player)) f(); else queue.push(f); }
+
+  /* ---------- 전체 소리 (헤더 버튼 하나로 모든 영상 제어) ---------- */
+  var soundOn = false;                       // 자동 재생 정책상 음소거로 시작
+  var sBtn = document.getElementById('sound-btn');
+  function applySound(p){
+    try{
+      if (soundOn){ p.unMute(); p.setVolume(60); } else { p.mute(); }
+    }catch(_){}
+  }
+  function syncSoundBtn(){
+    sBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+    var t = soundOn ? '소리 끄기' : '소리 켜기';
+    sBtn.setAttribute('aria-label', t); sBtn.title = t;
+  }
+  sBtn.addEventListener('click', function(){
+    soundOn = !soundOn; syncSoundBtn();
+    Object.keys(sliders).forEach(function(k){
+      sliders[k].players.forEach(function(p){ if (p && typeof p.isMuted === 'function') applySound(p); });
+    });
+  });
+  syncSoundBtn();
+
+  /* ---------- 공통 슬라이더 (자동 재생) ---------- */
+  var sliders = {};
+  function Slider(root){
+    this.root = root;
+    this.slides = Array.prototype.slice.call(root.querySelectorAll(':scope > .slide'));
+    this.i = 0; this.onChange = null; this.players = []; this.started = false;
+    this.auto = root.dataset.auto === '1';
+    var self = this;
+    root.querySelector('.ar.prev').addEventListener('click', function(){ self.go(self.i - 1); });
+    root.querySelector('.ar.next').addEventListener('click', function(){ self.go(self.i + 1); });
+  }
+  Slider.prototype.play = function(idx){
+    var s = this.slides[idx], id = s.dataset.vid, self = this;
+    if (!id || this.players[idx]) return;
+    var holder = document.createElement('div'); holder.className = 'yh'; s.appendChild(holder);
+    var token = {}; this.players[idx] = token;
+    whenYT(function(){
+      if (self.players[idx] !== token){ holder.remove(); return; }   // 그 사이 정지·재시작됨
+      self.players[idx] = new YT.Player(holder, {
+        videoId: id,
+        playerVars: {autoplay:1, mute:soundOn ? 0 : 1, rel:0, playsinline:1, modestbranding:1},
+        events: {
+          onReady: function(e){ applySound(e.target); e.target.playVideo(); },
+          onStateChange: function(e){ if (e.data === 0 && self.auto) setTimeout(function(){ self.go(self.i + 1); }, 0); }
+        }
+      });
+    });
+  };
+  Slider.prototype.stop = function(idx){
+    var p = this.players[idx];
+    if (p && typeof p.destroy === 'function'){ try{ p.destroy(); }catch(_){} }
+    this.players[idx] = null;
+    var h = this.slides[idx].querySelector('.yh'); if (h) h.remove();
+    var f = this.slides[idx].querySelector('iframe'); if (f) f.remove();
+  };
+  Slider.prototype.go = function(n){
+    var len = this.slides.length; n = (n + len) % len;
+    this.stop(this.i);
+    this.slides[this.i].classList.remove('on');
+    this.i = n; this.slides[n].classList.add('on');
+    if (this.started) this.play(n);
+    if (this.onChange) this.onChange(n);
+  };
+  Slider.prototype.start = function(){ this.started = true; this.play(this.i); };
+  Slider.prototype.pause = function(){ this.started = false; this.stop(this.i); };
+
+  document.querySelectorAll('.slider').forEach(function(el){ sliders[el.id] = new Slider(el); });
+
+  /* 화면에 보이면 자동 재생, 벗어나면 정지 (영상 여러 개가 동시에 재생되지 않도록) */
+  if ('IntersectionObserver' in window){
+    var vio = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        var sl = sliders[en.target.id]; if (!sl || !sl.root.dataset.yt) return;
+        clearTimeout(sl.t);
+        if (en.isIntersecting) sl.t = setTimeout(function(){ sl.start(); }, 450);
+        else sl.pause();
+      });
+    }, {threshold:0.5});
+    document.querySelectorAll('.slider[data-yt]').forEach(function(el){ vio.observe(el); });
+  } else { sliders['s-hero'].start(); }
+
+  /* ---------- 업데이트 영상 점 표시 ---------- */
+  var hero = sliders['s-hero'], dotBox = document.querySelector('.dots[data-for="s-hero"]');
+  hero.slides.forEach(function(_, i){
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', (i + 1) + '번째 영상'); b.innerHTML = '<i></i>';
+    b.addEventListener('click', function(){ hero.go(i); });
+    dotBox.appendChild(b);
+  });
+  function syncDots(n){ Array.prototype.forEach.call(dotBox.children, function(b, i){ b.classList.toggle('on', i === n); }); }
+  hero.onChange = syncDots; syncDots(0);
+
+  /* ---------- 신규 공명자 칩 ---------- */
+  var rz = sliders['s-rz'], chips = document.querySelectorAll('#rz-chips .ch');
+  chips.forEach(function(c){ c.addEventListener('click', function(){ rz.go(+c.dataset.i); }); });
+  rz.onChange = function(n){ chips.forEach(function(c, i){ c.classList.toggle('on', i === n); }); };
+
+  /* ---------- 스토리 · 신규 지역 ---------- */
+  var st = sliders['s-story'];
+  var meta = [
+    {t:'신규 스토리 PV', d:'3.7 버전 공식 트레일러입니다. (영문 공식 채널)'},
+    {t:'신규 지역 · 몽추천라', d:'3.7 버전 필드 미리보기 영상입니다. (명조 한국 공식 채널)'}
+  ];
+  var thumbs = document.querySelectorAll('#story-thumbs button');
+  thumbs.forEach(function(b){ b.addEventListener('click', function(){ st.go(+b.dataset.i); }); });
+  st.onChange = function(n){
+    thumbs.forEach(function(b, i){ b.classList.toggle('on', i === n); });
+    document.getElementById('story-title').textContent = meta[n].t;
+    document.getElementById('story-desc').textContent = meta[n].d;
+  };
+
+  /* ---------- 서랍 메뉴 (스와이프) ---------- */
+  var dr = document.getElementById('drawer'), ov = document.getElementById('ov'), mbtn = document.getElementById('menu-btn');
+  dr.inert = true;
+  function openMenu(){ dr.inert = false; dr.classList.add('open'); ov.classList.add('open'); document.documentElement.classList.add('lock'); mbtn.setAttribute('aria-expanded','true'); document.getElementById('menu-close').focus(); }
+  function closeMenu(back){ dr.classList.remove('open'); ov.classList.remove('open'); document.documentElement.classList.remove('lock'); dr.inert = true; mbtn.setAttribute('aria-expanded','false'); if (back) mbtn.focus(); }
+  mbtn.addEventListener('click', openMenu);
+  document.getElementById('menu-close').addEventListener('click', function(){ closeMenu(true); });
+  ov.addEventListener('click', function(){ closeMenu(true); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && dr.classList.contains('open')) closeMenu(true); });
+  document.querySelectorAll('#nav a').forEach(function(a){ a.addEventListener('click', function(){ closeMenu(false); }); });
+  var tx = 0, ty = 0, edge = false;
+  document.addEventListener('touchstart', function(e){ var t = e.touches[0]; tx = t.clientX; ty = t.clientY; edge = tx > window.innerWidth - 24; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    if (!dr.classList.contains('open') && edge && dx < 0) openMenu();        // 오른쪽 끝에서 왼쪽으로 쓸기 → 열기
+    else if (dr.classList.contains('open') && dx > 0) closeMenu(false);      // 오른쪽으로 쓸기 → 닫기
+  }, {passive:true});
+
+  /* ---------- 메뉴 강조: 스크롤 위치 기반 + 클릭한 항목 고정 ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var order = ['update','resonator','story','content','event','guide'];
+  var lock = null, lockUntil = 0, lockY = null, raf = 0;
+  function setActive(id){ links.forEach(function(a){ a.classList.toggle('on', a.getAttribute('href') === '#' + id); }); }
+  function topOf(id){ return document.getElementById(id).getBoundingClientRect().top; }
+  function spy(){
+    raf = 0;
+    if (lock){
+      if (Date.now() > lockUntil && lockY !== null && Math.abs(window.scrollY - lockY) > 40){ lock = null; lockY = null; }
+      else return;
+    }
+    var line = 76 + (window.innerHeight - 76) * 0.35, cur = order[0];
+    var sideBySide = Math.abs(topOf('event') - topOf('content')) < 40;      // 데스크톱: 이벤트 카드는 콘텐츠와 같은 줄
+    order.forEach(function(id){
+      if (id === 'event' && sideBySide) return;
+      if (topOf(id) <= line) cur = id;
+    });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = 'guide';
+    setActive(cur);
+  }
+  function onScroll(){ if (!raf) raf = requestAnimationFrame(spy); }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      lock = a.getAttribute('href').slice(1); setActive(lock);
+      lockUntil = Date.now() + 1500; lockY = null;
+      setTimeout(function(){ lockY = window.scrollY; }, 1550);
+    });
+  });
+  ['wheel','touchmove'].forEach(function(ev){ window.addEventListener(ev, function(){ lock = null; lockY = null; }, {passive:true}); });
+  window.addEventListener('keydown', function(e){ if (['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].indexOf(e.key) > -1){ lock = null; lockY = null; } });
+  spy();
+})();
+</script>
+</body>
+</html>
