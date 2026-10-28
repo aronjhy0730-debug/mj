@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>명조</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
@@ -68,6 +69,8 @@ html.lock{overflow:hidden}
 .dr nav a.on{border-left:3px solid var(--gold);padding-left:12px}
 .dr-hint{margin-top:auto;color:var(--mute);font-size:12px;text-align:center}
 @media (prefers-reduced-motion:reduce){.dr,.ov{transition:none}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);max-width:min(92vw,480px);background:var(--panel);border:1px solid var(--gold);color:var(--text);padding:12px 18px;font-size:14px;opacity:0;visibility:hidden;transition:opacity .25s,transform .25s,visibility .25s;z-index:60;text-align:center}
+.toast.on{opacity:1;visibility:visible;transform:translate(-50%,0)}
 /* chips */
 .ch{height:44px;padding:0 20px;border-radius:22px;border:1px solid var(--gold);background:none;color:var(--gold);font:500 14px "Noto Sans KR";cursor:pointer}
 .ch.on{background:var(--gold);color:var(--bg)}
@@ -75,13 +78,14 @@ html.lock{overflow:hidden}
 /* sections */
 .sec{padding:96px 160px 0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.hero{--r:2.155;aspect-ratio:var(--r);height:auto;min-height:200px}
+.hero{--r:2.155;width:100%;height:min(calc(min(100vw,1440px) / var(--r)), calc(100vh - 76px));height:min(calc(min(100vw,1440px) / var(--r)), calc(100svh - 76px));min-height:200px}
+.hero>img.bg{object-position:center 55%}
 .hero .pl-lg{width:48px;height:48px;box-shadow:0 0 0 4px rgba(20,16,15,.35)}
 .hero .pl-lg svg{width:17px;height:17px}
 .hero .pl-lg::after{content:"";position:absolute;inset:-8px;border-radius:50%}   /* 버튼은 작아져도 터치 영역은 넉넉하게 */
 .hero.playing{background:#000}
 .hero.playing>img.bg,.hero.playing>.pl{display:none}
-.hero iframe{left:50%;right:auto;top:0;bottom:auto;width:calc(100% * 16 / 9 / var(--r));height:100%;transform:translateX(-50%)}
+.hero iframe{left:50%;right:auto;top:0;bottom:auto;height:100%;width:auto;aspect-ratio:16/9;max-width:100%;transform:translateX(-50%)}
 .rz{padding:0 64px}
 .rz .ph{height:460px}
 .story .slider{padding:0 64px}
@@ -117,7 +121,7 @@ html.lock{overflow:hidden}
   .grid3{grid-template-columns:1fr}
   .story-meta{flex-direction:column;align-items:flex-start}.thumbs button{width:120px;height:68px}
 }
-@media (max-width:700px){.yt{top:16px;left:20px;right:auto;bottom:auto}.hero .pl-lg{width:32px;height:32px;box-shadow:0 0 0 3px rgba(20,16,15,.35)}.hero .pl-lg svg{width:12px;height:12px}.hero .pl-lg::after{inset:-6px}}
+@media (max-width:700px){.yt{top:16px;left:20px;right:auto;bottom:auto}.hero{--r:1.7778}.hero .pl-lg{width:32px;height:32px;box-shadow:0 0 0 3px rgba(20,16,15,.35)}.hero .pl-lg svg{width:12px;height:12px}.hero .pl-lg::after{inset:-6px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.pl{transition:none}}
 </style>
 </head>
@@ -129,6 +133,7 @@ html.lock{overflow:hidden}
   <div style="display:flex;align-items:center;gap:12px"><button class="mb" id="sound-btn" aria-label="소리 켜기" aria-pressed="false" title="소리 켜기"><svg class="ic-off" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg><svg class="ic-on" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button><button class="mb" id="menu-btn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button class="av" aria-label="내 계정"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1-5 4-7 8-7s7 2 8 7"></path></svg></button></div>
   
 </div></header>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"></div>
 <aside class="dr" id="drawer" aria-label="메뉴">
   <div class="dr-top"><span class="ey">MENU</span><button class="mb" id="menu-close" aria-label="메뉴 닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9B26A" stroke-width="2" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
@@ -250,6 +255,11 @@ html.lock{overflow:hidden}
   });
   syncSoundBtn();
 
+  var toastT;
+  function toast(msg){
+    var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('on'); }, 5000);
+  }
   function tryStart(sl){
     clearTimeout(sl.t);
     if (sl.click || heroBusy) return;
@@ -290,6 +300,7 @@ html.lock{overflow:hidden}
     if (!id || this.players[idx]) return;
     var holder = document.createElement('div'); holder.className = 'yh'; s.appendChild(holder);
     var token = {}; this.players[idx] = token;
+    setTimeout(function(){ if (self.players[idx] === token) self.fail(idx); }, 10000);   // YouTube를 불러오지 못한 경우
     whenYT(function(){
       if (self.players[idx] !== token){ holder.remove(); return; }   // 그 사이 정지·재시작됨
       self.players[idx] = new YT.Player(holder, {
@@ -297,10 +308,16 @@ html.lock{overflow:hidden}
         playerVars: {autoplay:1, mute:soundOn ? 0 : 1, rel:0, playsinline:1, modestbranding:1},
         events: {
           onReady: function(e){ applySound(e.target); e.target.playVideo(); },
+          onError: function(){ self.fail(idx); },
           onStateChange: function(e){ if (e.data === 0){ if (self.auto) setTimeout(function(){ self.go(self.i + 1); }, 0); if (self.click) releaseHero(); } }
         }
       });
     });
+  };
+  Slider.prototype.fail = function(idx){           // 재생 실패: 포스터로 되돌리고 안내
+    this.stop(idx);
+    if (this.click) releaseHero();
+    toast('영상을 재생할 수 없어요. "YouTube에서 보기"를 눌러 확인해 주세요.');
   };
   Slider.prototype.stop = function(idx){
     this.slides[idx].classList.remove('playing');
